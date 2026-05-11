@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,8 +7,106 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Placeholder model — full schema will be defined in Task 2
-model Placeholder {
+model User {
   id        String   @id @default(cuid())
+  phone     String   @unique
+  nickname  String   @default("")
+  avatar    String   @default("")
+  role      String   @default("user")
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+  progress  Progress[]
+  reviews   Review[]
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  pwdHash   String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Course {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  cover       String    @default("")
+  price       Int
+  category    String
+  status      String    @default("draft")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  chapters    Chapter[]
+  orders      Order[]
+  reviews     Review[]
+}
+
+model Chapter {
+  id          String   @id @default(cuid())
+  courseId    String
+  title       String
+  videoUrl    String   @default("")
+  duration    Int      @default(0)
+  sortOrder   Int      @default(0)
+  freePreview Boolean  @default(false)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress    Progress[]
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  userId        String
+  courseId      String
+  amount        Int
+  status        String   @default("pending")
+  transactionId String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id])
+  course        Course   @relation(fields: [courseId], references: [id])
+  payment       Payment?
+}
+
+model Payment {
+  id         String    @id @default(cuid())
+  orderId    String    @unique
+  method     String    @default("wechat_h5")
+  amount     Int
+  paidAt     DateTime?
+  wxPrepayId String?
+  createdAt  DateTime  @default(now())
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Progress {
+  id         String   @id @default(cuid())
+  userId     String
+  chapterId  String
+  watchedSec Int      @default(0)
+  completed  Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
+  chapter    Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chapterId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  rating    Int
+  content   String   @default("")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
 }
