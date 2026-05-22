@@ -214,7 +214,7 @@ export default function LearnClient({ course }: { course: CourseData }) {
                         </p>
                         {!isLocked && (
                           <Link
-                            href={`/learn/${courseId}/practice?chapter=${chapter.id}`}
+                            href={`/learn/${course.id}/practice?chapter=${chapter.id}`}
                             onClick={(e) => e.stopPropagation()}
                             className="inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 mt-1"
                           >
