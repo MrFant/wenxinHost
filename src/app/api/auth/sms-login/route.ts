@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const token = generateToken(user.id, user.role)
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       token,
       user: {
@@ -38,6 +38,17 @@ export async function POST(request: NextRequest) {
         role: user.role,
       },
     })
+
+    // 设置 httpOnly cookie，middleware 可以读取
+    res.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7 天
+      path: '/',
+    })
+
+    return res
   } catch {
     return NextResponse.json({ error: '登录失败' }, { status: 500 })
   }
