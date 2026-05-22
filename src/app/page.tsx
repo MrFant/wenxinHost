@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Zap, Shield, Users } from "lucide-react";
+import { HeroCarousel } from "@/components/home/hero-carousel";
 
 const features = [
   {
@@ -28,32 +29,8 @@ const features = [
 export default function HomePage() {
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-600 to-purple-700 text-white">
-        <div className="container mx-auto px-4 py-20 md:py-32 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            让学习更简单
-          </h1>
-          <p className="text-lg md:text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            优质在线课程，涵盖编程、AI、设计、职场技能。
-            <br />
-            名师授课，实战驱动，助你实现职业突破。
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100" asChild>
-              <Link href="/courses">浏览课程</Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white/10"
-              asChild
-            >
-              <Link href="/about">了解更多</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* Hero Carousel */}
+      <HeroCarousel />
 
       {/* Features */}
       <section className="py-16 md:py-24">

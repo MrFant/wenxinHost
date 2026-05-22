@@ -1,10 +1,13 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Clock, BookOpen, Users, Star, Play, Lock, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { ReviewList } from '@/components/course/review-list'
+import { ReviewForm } from '@/components/course/review-form'
 
 interface Chapter {
   id: string
@@ -35,7 +38,33 @@ function formatDuration(seconds: number): string {
   return `${mins}分钟`
 }
 
+interface Review {
+  id: string
+  rating: number
+  content: string
+  createdAt: string
+  user: { id: string; nickname: string; avatar: string | null }
+}
+
 export default function CourseDetailClient({ course }: { course: CourseData }) {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [avgRating, setAvgRating] = useState(0)
+  const [reviewTotal, setReviewTotal] = useState(0)
+
+  const fetchReviews = () => {
+    fetch(`/api/courses/${course.id}/reviews`)
+      .then((r) => r.json())
+      .then((data) => {
+        setReviews(data.reviews || [])
+        setAvgRating(data.avgRating || 0)
+        setReviewTotal(data.total || 0)
+      })
+  }
+
+  useEffect(() => {
+    fetchReviews()
+  }, [course.id])
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumb */}
@@ -122,6 +151,15 @@ export default function CourseDetailClient({ course }: { course: CourseData }) {
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Reviews Section */}
+          <div className="mt-8">
+            <h2 className="text-xl font-semibold mb-4">课程评价</h2>
+            <ReviewForm courseId={course.id} onSuccess={fetchReviews} />
+            <div className="mt-6">
+              <ReviewList reviews={reviews} avgRating={avgRating} total={reviewTotal} />
             </div>
           </div>
         </div>
