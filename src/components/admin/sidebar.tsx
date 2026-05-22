@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, BookOpen, Users, ShoppingCart, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Users, ShoppingCart, Settings, LogOut, Tags } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 
 const navItems = [
   { href: '/admin', label: '数据概览', icon: LayoutDashboard },
   { href: '/admin/courses', label: '课程管理', icon: BookOpen },
+  { href: '/admin/categories', label: '分类管理', icon: Tags },
   { href: '/admin/orders', label: '订单管理', icon: ShoppingCart },
   { href: '/admin/users', label: '用户管理', icon: Users },
   { href: '/admin/settings', label: '系统设置', icon: Settings },

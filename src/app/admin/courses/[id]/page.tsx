@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Save, Plus, Trash2, ArrowLeft } from 'lucide-react'
+import { Save, Plus, Trash2, ArrowLeft, Upload, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 
 interface Chapter {
   id?: string
@@ -26,27 +25,39 @@ interface CourseForm {
   chapters: Chapter[]
 }
 
-const categories = ['编程开发', '人工智能', '设计创意', '职场技能', '语言学习']
+interface Category {
+  id: string
+  name: string
+}
 
 export default function AdminCourseEditPage() {
   const params = useParams()
   const router = useRouter()
   const courseId = params.id as string
   const isNew = courseId === 'new'
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState<CourseForm>({
     title: '',
     description: '',
     cover: '',
     price: 0,
-    category: '编程开发',
+    category: '',
     status: 'draft',
     chapters: [],
   })
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {
+    // 拉分类列表
+    fetch('/api/admin/categories')
+      .then(r => r.json())
+      .then(data => setCategories(data))
+      .catch(() => {})
+
     if (isNew) return
 
     const fetchCourse = async () => {
@@ -62,13 +73,39 @@ export default function AdminCourseEditPage() {
           status: data.status,
           chapters: data.chapters || [],
         })
-      } catch {
-      } finally {
+      } catch {} finally {
         setLoading(false)
       }
     }
     fetchCourse()
   }, [courseId, isNew])
+
+  // 封面图上传
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setForm(f => ({ ...f, cover: data.path }))
+      } else {
+        alert('上传失败')
+      }
+    } catch {
+      alert('上传出错')
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -85,8 +122,7 @@ export default function AdminCourseEditPage() {
       if (res.ok) {
         router.push('/admin/courses')
       }
-    } catch {
-    } finally {
+    } catch {} finally {
       setSaving(false)
     }
   }
@@ -167,8 +203,9 @@ export default function AdminCourseEditPage() {
                     value={form.category}
                     onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
                   >
+                    <option value="">选择分类</option>
                     {categories.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat.id} value={cat.name}>{cat.name}</option>
                     ))}
                   </select>
                 </div>
@@ -181,13 +218,38 @@ export default function AdminCourseEditPage() {
                   />
                 </div>
               </div>
+              {/* 封面图 */}
               <div>
-                <label className="text-sm font-medium mb-1 block">封面图 URL</label>
-                <Input
-                  value={form.cover}
-                  onChange={(e) => setForm((f) => ({ ...f, cover: e.target.value }))}
-                  placeholder="/images/courses/xxx.jpg"
-                />
+                <label className="text-sm font-medium mb-1 block">封面图</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={form.cover}
+                    onChange={(e) => setForm((f) => ({ ...f, cover: e.target.value }))}
+                    placeholder="图片 URL 或上传后自动填入"
+                    className="flex-1"
+                  />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={handleCoverUpload}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                  >
+                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  </Button>
+                </div>
+                {form.cover && (
+                  <img
+                    src={form.cover}
+                    alt="封面预览"
+                    className="mt-2 h-32 rounded-lg object-cover border"
+                  />
+                )}
               </div>
             </div>
           </div>

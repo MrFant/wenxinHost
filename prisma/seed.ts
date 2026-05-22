@@ -14,6 +14,7 @@ async function main() {
   await prisma.user.deleteMany()
   await prisma.admin.deleteMany()
   await prisma.setting.deleteMany()
+  await prisma.category.deleteMany()
 
   // Create admin user (password: admin123)
   const pwdHash = await bcrypt.hash('admin123', 10)
@@ -24,6 +25,14 @@ async function main() {
       role: 'admin',
     },
   })
+
+  // Create default categories
+  const defaultCategories = ['编程开发', '人工智能', '设计创意', '职场技能', '语言学习']
+  for (let i = 0; i < defaultCategories.length; i++) {
+    await prisma.category.create({
+      data: { name: defaultCategories[i], sortOrder: i },
+    })
+  }
 
   // Create sample courses
   const courses = [
