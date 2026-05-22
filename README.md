@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 文心课堂
 
-## Getting Started
+在线教育课程售卖平台，集品牌展示、课程购买、在线学习、后台管理于一体。
 
-First, run the development server:
+🔗 **线上地址：** https://ziiy.fun
+
+## 功能
+
+### 前台
+- 品牌首页（轮播图 + 特色介绍 + 精选课程）
+- 课程中心（分类筛选 + 搜索 + 详情）
+- 微信 H5 支付购买
+- 在线学习（视频播放 + 章节导航 + 进度记录）
+- 在线练习（看字选拼音 / 看拼音选字 / 听音选拼音）
+- 用户中心（个人资料、我的课程、我的订单）
+- 评价系统
+
+### 后台
+- 数据概览 Dashboard
+- 课程管理（CRUD + 章节管理 + 封面上传）
+- 分类管理（增删改 + 排序）
+- 练习题管理（按章节管理题目）
+- 订单管理（筛选 + 退款）
+- 用户管理（搜索 + 禁用/启用）
+- 系统设置
+
+## 技术栈
+
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS 4 + Radix UI
+- Prisma ORM + SQLite
+- 微信支付 H5 (V3 API)
+- JWT 认证（手机验证码登录）
+- Vitest 测试
+
+## 快速开始
 
 ```bash
+# 安装依赖
+npm install
+
+# 初始化数据库
+npx prisma migrate dev
+npx tsx prisma/seed.ts
+
+# 启动开发服务器
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 环境变量
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+复制 `.env.example` 为 `.env`，填写以下配置：
 
-## Learn More
+```env
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="your-secret-key"
 
-To learn more about Next.js, take a look at the following resources:
+# 微信支付（生产环境必填）
+WX_MCH_ID=""
+WX_API_KEY=""
+WX_APP_ID=""
+WX_PRIVATE_KEY=""
+WX_CERT_SERIAL=""
+WX_NOTIFY_URL=""
+WX_PLATFORM_CERT=""
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 部署
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+项目已配置 GitHub Actions 自动部署，push 到 master 分支即可触发。
 
-## Deploy on Vercel
+手动部署：
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build
+npx prisma migrate deploy
+npm start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 管理后台
+
+访问 `/admin`，默认账号：
+- 用户名：`admin`
+- 密码：`admin123`
+
+## License
+
+Private
