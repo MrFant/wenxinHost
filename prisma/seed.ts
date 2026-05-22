@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -15,11 +16,12 @@ async function main() {
   await prisma.setting.deleteMany()
 
   // Create admin user (password: admin123)
+  const pwdHash = await bcrypt.hash('admin123', 10)
   await prisma.admin.create({
     data: {
       username: 'admin',
-      pwdHash: '$2a$10$placeholder_hash_for_admin123',
-      role: 'superadmin',
+      pwdHash,
+      role: 'admin',
     },
   })
 
