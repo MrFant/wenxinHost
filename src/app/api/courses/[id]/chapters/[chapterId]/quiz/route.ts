@@ -19,14 +19,14 @@ function getUserId(request: NextRequest): string | null {
 // GET 获取章节练习题（不含答案，需登录 + 已购买）
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
+  { params }: { params: Promise<{ id: string; chapterId: string }> }
 ) {
   const userId = getUserId(request)
   if (!userId) {
     return NextResponse.json({ error: '请先登录' }, { status: 401 })
   }
 
-  const { courseId, chapterId } = await params
+  const { id: courseId, chapterId } = await params
 
   // 检查是否已购买
   const order = await prisma.order.findFirst({
@@ -48,7 +48,6 @@ export async function GET(
           content: true,
           options: true,
           sortOrder: true,
-          // 不返回答案
         },
       },
     },
@@ -72,16 +71,16 @@ export async function GET(
 // POST 提交答案
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
+  { params }: { params: Promise<{ id: string; chapterId: string }> }
 ) {
   const userId = getUserId(request)
   if (!userId) {
     return NextResponse.json({ error: '请先登录' }, { status: 401 })
   }
 
-  const { courseId, chapterId } = await params
+  const { id: courseId, chapterId } = await params
   const body = await request.json()
-  const { answers } = body // { questionId: "A", ... }
+  const { answers } = body
 
   // 检查是否已购买
   const order = await prisma.order.findFirst({
