@@ -54,7 +54,7 @@ model Course {
 
 model Chapter {
   id          String   @id @default(cuid())
-  courseId    String
+  courseId     String
   title       String
   videoUrl    String   @default("")
   duration    Int      @default(0)
@@ -62,6 +62,7 @@ model Chapter {
   freePreview Boolean  @default(false)
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   progress    Progress[]
+  quiz        Quiz?
 }
 
 model Order {
@@ -111,6 +112,27 @@ model Review {
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
   course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model Quiz {
+  id        String   @id @default(cuid())
+  chapterId String   @unique
+  title     String
+  createdAt DateTime @default(now())
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  questions QuizQuestion[]
+}
+
+model QuizQuestion {
+  id           String  @id @default(cuid())
+  quizId       String
+  type         String  @default("char_to_pinyin") // char_to_pinyin | pinyin_to_char | audio_to_pinyin
+  content      String  // 题干（汉字 or 拼音 or 音频 URL）
+  options      String  // JSON: [{label:"A", text:"妈"}, ...]
+  answer       String  // 正确答案 "A"
+  explanation  String  @default("")
+  sortOrder    Int     @default(0)
+  quiz         Quiz    @relation(fields: [quizId], references: [id], onDelete: Cascade)
 }
 
 model Setting {

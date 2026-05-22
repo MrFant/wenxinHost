@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Play, CheckCircle, Lock, Clock } from 'lucide-react'
+import Link from 'next/link'
+import { Play, CheckCircle, Lock, Clock, ClipboardList } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -211,6 +212,16 @@ export default function LearnClient({ course }: { course: CourseData }) {
                         <p className="text-xs text-gray-400 mt-1">
                           {formatDuration(chapter.duration)}
                         </p>
+                        {!isLocked && (
+                          <Link
+                            href={`/learn/${courseId}/practice?chapter=${chapter.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 mt-1"
+                          >
+                            <ClipboardList className="h-3 w-3" />
+                            做练习
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </button>

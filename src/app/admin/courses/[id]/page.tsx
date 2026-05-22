@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Save, Plus, Trash2, ArrowLeft, Upload, Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { Save, Plus, Trash2, ArrowLeft, Upload, Loader2, ClipboardList } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -332,6 +333,14 @@ export default function AdminCourseEditPage() {
                 <Save className="h-4 w-4 mr-2" />
                 {saving ? '保存中...' : '保存课程'}
               </Button>
+              {!isNew && (
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href={`/admin/courses/${courseId}/quiz`}>
+                    <ClipboardList className="h-4 w-4 mr-2" />
+                    练习管理
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>
