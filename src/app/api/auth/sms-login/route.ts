@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find or create user
-    let user = await prisma.user.findUnique({ where: { phone } })
+    let user = await prisma.user.findFirst({ where: { phone } })
     if (!user) {
       user = await prisma.user.create({
         data: {
