@@ -8,8 +8,9 @@ async function getCourse(id: string): Promise<CourseData> {
   return res.json()
 }
 
-export default async function CoursePage({ params }: { params: { id: string } }) {
-  const course = await getCourse(params.id)
+export default async function CoursePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const course = await getCourse(id)
 
   return <CourseDetail course={course} />
 }
