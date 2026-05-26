@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Save, Plus, Trash2, ArrowLeft, Upload, Loader2, ClipboardList } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { VideoUploader } from '@/modules/course/components/VideoUploader'
 
 interface Chapter {
   id?: string
@@ -283,12 +284,12 @@ export default function AdminCourseEditPage() {
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-3 gap-3 ml-11">
-                    <Input
+                  <div className="ml-11 space-y-3">
+                    <VideoUploader
                       value={chapter.videoUrl}
-                      onChange={(e) => updateChapter(index, 'videoUrl', e.target.value)}
-                      placeholder="视频URL"
+                      onChange={(url) => updateChapter(index, 'videoUrl', url)}
                     />
+                    <div className="grid grid-cols-2 gap-3">
                     <Input
                       type="number"
                       value={chapter.duration}
@@ -303,6 +304,7 @@ export default function AdminCourseEditPage() {
                       />
                       免费试看
                     </label>
+                    </div>
                   </div>
                 </div>
               ))}
