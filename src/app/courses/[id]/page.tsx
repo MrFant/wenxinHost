@@ -1,49 +1,15 @@
-import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
-import CourseDetailClient from './course-detail-client'
+import { CourseDetail } from '@/modules/course'
+import type { CourseData } from '@/modules/course'
 
-export default async function CourseDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-
-  const course = await prisma.course.findUnique({
-    where: { id, status: 'published' },
-    include: {
-      chapters: {
-        orderBy: { sortOrder: 'asc' },
-      },
-      _count: { select: { orders: true, reviews: true } },
-    },
+async function getCourse(id: string): Promise<CourseData> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/${id}`, {
+    cache: 'no-store',
   })
+  return res.json()
+}
 
-  if (!course) notFound()
+export default async function CoursePage({ params }: { params: { id: string } }) {
+  const course = await getCourse(params.id)
 
-  const totalDuration = course.chapters.reduce((sum, c) => sum + c.duration, 0)
-
-  return (
-    <CourseDetailClient
-      course={{
-        id: course.id,
-        title: course.title,
-        description: course.description,
-        cover: course.cover,
-        price: course.price,
-        category: course.category,
-        chapterCount: course.chapters.length,
-        totalDuration,
-        studentCount: course._count.orders,
-        reviewCount: course._count.reviews,
-        chapters: course.chapters.map((c) => ({
-          id: c.id,
-          title: c.title,
-          duration: c.duration,
-          sortOrder: c.sortOrder,
-          freePreview: c.freePreview,
-        })),
-      }}
-    />
-  )
+  return <CourseDetail course={course} />
 }

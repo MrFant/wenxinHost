@@ -1,33 +1,35 @@
-import { Suspense } from 'react'
-import CoursesContent from './courses-content'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { CourseList } from '@/modules/course'
+import type { CourseListType } from '@/modules/course'
 
 export default function CoursesPage() {
-  return (
-    <Suspense fallback={<CoursesLoading />}>
-      <CoursesContent />
-    </Suspense>
-  )
-}
+  const [courses, setCourses] = useState<CourseListType[]>([])
+  const [loading, setLoading] = useState(true)
 
-function CoursesLoading() {
+  useEffect(() => {
+    fetch('/api/courses')
+      .then((r) => r.json())
+      .then((data) => {
+        setCourses(data.courses || [])
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-gray-400">加载中...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">课程中心</h1>
-        <p className="text-gray-500">选择适合你的课程，开始学习之旅</p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="rounded-xl border bg-white overflow-hidden animate-pulse">
-            <div className="aspect-video bg-gray-200" />
-            <div className="p-4 space-y-3">
-              <div className="h-5 bg-gray-200 rounded w-3/4" />
-              <div className="h-4 bg-gray-200 rounded w-full" />
-              <div className="h-4 bg-gray-200 rounded w-1/2" />
-            </div>
-          </div>
-        ))}
-      </div>
+      <h1 className="text-3xl font-bold mb-8">课程中心</h1>
+      <CourseList courses={courses} />
     </div>
   )
 }
