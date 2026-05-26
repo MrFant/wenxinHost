@@ -8,16 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  phone     String   @unique
-  nickname  String   @default("")
-  avatar    String   @default("")
-  role      String   @default("user")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Order[]
-  progress  Progress[]
-  reviews   Review[]
+  id            String    @id @default(cuid())
+  phone         String?
+  password      String?
+  wechatOpenId  String?   @unique
+  wechatUnionId String?
+  nickname      String    @default("")
+  avatar        String    @default("")
+  role          String    @default("user")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  orders        Order[]
+  progress      Progress[]
+  reviews       Review[]
 }
 
 model Admin {
@@ -126,13 +129,18 @@ model Quiz {
 model QuizQuestion {
   id           String  @id @default(cuid())
   quizId       String
-  type         String  @default("char_to_pinyin") // char_to_pinyin | pinyin_to_char | audio_to_pinyin
+  type         String  @default("char_to_pinyin") // char_to_pinyin | pinyin_to_char | audio_to_pinyin | typing_to_pinyin | pinyin_combination
   content      String  // 题干（汉字 or 拼音 or 音频 URL）
   options      String  // JSON: [{label:"A", text:"妈"}, ...]
   answer       String  // 正确答案 "A"
   explanation  String  @default("")
   sortOrder    Int     @default(0)
   quiz         Quiz    @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  // 拼音相关字段
+  pinyinBase   String? // 基础拼音（不带声调）
+  tone         Int?    // 声调（1-4）
+  audioUrl     String? // 音频URL
 }
 
 model Setting {
