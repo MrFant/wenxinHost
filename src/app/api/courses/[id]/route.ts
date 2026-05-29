@@ -1,5 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOSSClient } from '@/lib/oss'
+
+function signVideoUrl(videoUrl: string): string {
+  if (!videoUrl || !videoUrl.includes('.oss-')) return videoUrl
+  try {
+    const client = getOSSClient()
+    const urlObj = new URL(videoUrl)
+    const key = urlObj.pathname.startsWith('/') ? urlObj.pathname.slice(1) : urlObj.pathname
+    return client.signatureUrl(key, { expires: 7200 })
+  } catch {
+    return videoUrl
+  }
+}
 
 export async function GET(
   request: NextRequest,
@@ -13,7 +26,11 @@ export async function GET(
       chapters: {
         orderBy: { sortOrder: 'asc' },
       },
-      _count: { select: { orders: true, reviews: true } },
+      orders: {
+        where: { status: 'paid' },
+        select: { id: true },
+      },
+      _count: { select: { reviews: true } },
     },
   })
 
@@ -23,12 +40,16 @@ export async function GET(
 
   const totalDuration = course.chapters.reduce((sum, c) => sum + c.duration, 0)
 
+  const { orders, _count, ...courseData } = course
   return NextResponse.json({
-    ...course,
+    ...courseData,
+    chapters: course.chapters.map((ch) => ({
+      ...ch,
+      videoUrl: signVideoUrl(ch.videoUrl),
+    })),
     chapterCount: course.chapters.length,
     totalDuration,
-    studentCount: course._count.orders,
-    reviewCount: course._count.reviews,
-    _count: undefined,
+    studentCount: orders.length,
+    reviewCount: _count.reviews,
   })
 }

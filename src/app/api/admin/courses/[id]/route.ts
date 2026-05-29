@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOSSClient } from '@/lib/oss'
+
+function signVideoUrl(videoUrl: string): string {
+  // 只对 OSS 上的视频 URL 生成签名
+  if (!videoUrl || !videoUrl.includes('.oss-')) return videoUrl
+  try {
+    const client = getOSSClient()
+    // 从完整 URL 中提取 OSS key
+    const urlObj = new URL(videoUrl)
+    const key = urlObj.pathname.startsWith('/') ? urlObj.pathname.slice(1) : urlObj.pathname
+    // 签名 URL，有效期 2 小时
+    return client.signatureUrl(key, { expires: 7200 })
+  } catch {
+    return videoUrl
+  }
+}
 
 export async function GET(
   request: NextRequest,
@@ -18,7 +34,16 @@ export async function GET(
     return NextResponse.json({ error: '课程不存在' }, { status: 404 })
   }
 
-  return NextResponse.json(course)
+  // 为每个章节的视频 URL 生成签名链接
+  const courseWithSignedUrls = {
+    ...course,
+    chapters: course.chapters.map((ch) => ({
+      ...ch,
+      videoUrl: signVideoUrl(ch.videoUrl),
+    })),
+  }
+
+  return NextResponse.json(courseWithSignedUrls)
 }
 
 export async function PUT(
