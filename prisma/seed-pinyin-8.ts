@@ -6,14 +6,14 @@ const prisma = new PrismaClient()
 const OSS_BASE = 'https://pinyin-course-videos.oss-cn-beijing.aliyuncs.com/courses/pinyin-basic'
 
 const chapters = [
-  { title: '1课：课程介绍', file: '1课：课程介绍', duration: 0, sortOrder: 1, freePreview: true },
-  { title: '2课：声母学习', file: '2课：声母学习', duration: 0, sortOrder: 2, freePreview: false },
-  { title: '3课：韵母学习', file: '3课：韵母学习', duration: 0, sortOrder: 3, freePreview: false },
-  { title: '4课：整体认读音节学习', file: '4课：整体认读音节学习', duration: 0, sortOrder: 4, freePreview: false },
-  { title: '5课：拼读规则学习', file: '5课：拼读规则学习', duration: 0, sortOrder: 5, freePreview: false },
-  { title: '6课：拼读规则应用', file: '6课：拼读规则应用', duration: 0, sortOrder: 6, freePreview: false },
-  { title: '7课：26个字母大小写', file: '7课：26个字母大小写', duration: 0, sortOrder: 7, freePreview: false },
-  { title: '8课：四步教会你拼音打字', file: '8课：四步教会你拼音打字', duration: 0, sortOrder: 8, freePreview: false },
+  { title: '1课：课程介绍', file: '01-intro', duration: 0, sortOrder: 1, freePreview: true },
+  { title: '2课：声母学习', file: '02-initials', duration: 0, sortOrder: 2, freePreview: false },
+  { title: '3课：韵母学习', file: '03-finals', duration: 0, sortOrder: 3, freePreview: false },
+  { title: '4课：整体认读音节学习', file: '04-syllables', duration: 0, sortOrder: 4, freePreview: false },
+  { title: '5课：拼读规则学习', file: '05-spelling-rules', duration: 0, sortOrder: 5, freePreview: false },
+  { title: '6课：拼读规则应用', file: '06-spelling-practice', duration: 0, sortOrder: 6, freePreview: false },
+  { title: '7课：26个字母大小写', file: '07-alphabet', duration: 0, sortOrder: 7, freePreview: false },
+  { title: '8课：四步教会你拼音打字', file: '08-typing-guide', duration: 0, sortOrder: 8, freePreview: false },
 ]
 
 async function main() {
